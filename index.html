@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consistency Tracker</title>
+    <title>Sha's Consistency Tracker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,22 +50,57 @@
 </head>
 <body>
     <div class="tracker">
-        <h1>Consistency Tracker</h1>
+        <h1>Sha's Consistency Tracker</h1>
+        <p id="startDate">Start Date: <span>Not Set</span></p>
         <p id="dayCount">Days Consistent: <span>0</span></p>
         <button onclick="markConsistent()">Mark Day Complete</button>
     </div>
 
     <script>
-        // Initialize day count from local storage or default to 0
+        // Initialize variables from local storage or set defaults
         let dayCount = parseInt(localStorage.getItem('consistencyDays')) || 0;
+        let lastMarkedDate = localStorage.getItem('lastMarkedDate');
+        let startDate = localStorage.getItem('startDate');
 
-        // Display initial count
+        // Function to format dates as YYYY-MM-DD
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        // Get today's date
+        const today = new Date();
+        const todayFormatted = formatDate(today);
+
+        // Reset if a day is skipped
+        if (lastMarkedDate && todayFormatted !== lastMarkedDate) {
+            const lastDate = new Date(lastMarkedDate);
+            const diffInDays = (today - lastDate) / (1000 * 60 * 60 * 24);
+            if (diffInDays > 1) {
+                dayCount = 0;
+                startDate = null;
+                localStorage.removeItem('startDate');
+            }
+        }
+
+        // Set start date if not already set
+        if (!startDate) {
+            startDate = todayFormatted;
+            localStorage.setItem('startDate', startDate);
+        }
+
+        // Display initial values
+        document.getElementById('startDate').querySelector('span').textContent = startDate;
         document.getElementById('dayCount').querySelector('span').textContent = dayCount;
 
         // Function to mark a day as consistent
         function markConsistent() {
+            // Update day count and last marked date
             dayCount += 1;
+            lastMarkedDate = todayFormatted;
             localStorage.setItem('consistencyDays', dayCount);
+            localStorage.setItem('lastMarkedDate', lastMarkedDate);
+
+            // Display updated values
             document.getElementById('dayCount').querySelector('span').textContent = dayCount;
         }
     </script>
