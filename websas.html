@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consistency Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .tracker {
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .tracker h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .tracker button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #fff;
+            background: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .tracker button:hover {
+            background: #0056b3;
+        }
+
+        .tracker p {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="tracker">
+        <h1>Consistency Tracker</h1>
+        <p id="dayCount">Days Consistent: <span>0</span></p>
+        <button onclick="markConsistent()">Mark Day Complete</button>
+    </div>
+
+    <script>
+        // Initialize day count from local storage or default to 0
+        let dayCount = parseInt(localStorage.getItem('consistencyDays')) || 0;
+
+        // Display initial count
+        document.getElementById('dayCount').querySelector('span').textContent = dayCount;
+
+        // Function to mark a day as consistent
+        function markConsistent() {
+            dayCount += 1;
+            localStorage.setItem('consistencyDays', dayCount);
+            document.getElementById('dayCount').querySelector('span').textContent = dayCount;
+        }
+    </script>
+</body>
+</html>
