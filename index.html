@@ -94,6 +94,12 @@
 
         // Function to mark a day as consistent
         function markConsistent() {
+            // Check if today's date matches the last marked date
+            if (lastMarkedDate === todayFormatted) {
+                alert("You've already marked today as complete!");
+                return;
+            }
+
             // Update day count and last marked date
             dayCount += 1;
             lastMarkedDate = todayFormatted;
