@@ -47,6 +47,30 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
+
+        .log {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 1em;
+        }
+
+        .log h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .log ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .log ul li {
+            background: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +80,10 @@
         <p id="dayCount">Days Consistent: <span>0</span></p>
         <button onclick="markConsistent()">Mark Day Complete</button>
         <button onclick="resetTracker()">Reset Tracker</button>
+        <div class="log">
+            <h2>Consistency Log:</h2>
+            <ul id="logList"></ul>
+        </div>
     </div>
 
     <script>
@@ -63,6 +91,7 @@
         let dayCount = parseInt(localStorage.getItem('consistencyDays')) || 0;
         let lastMarkedDate = localStorage.getItem('lastMarkedDate');
         let startDate = localStorage.getItem('startDate');
+        let log = JSON.parse(localStorage.getItem('consistencyLog')) || [];
 
         // Function to format dates as YYYY-MM-DD
         function formatDate(date) {
@@ -78,6 +107,10 @@
             const lastDate = new Date(lastMarkedDate);
             const diffInDays = (today - lastDate) / (1000 * 60 * 60 * 24);
             if (diffInDays > 1) {
+                if (startDate && dayCount > 0) {
+                    log.push({ startDate, endDate: lastMarkedDate, days: dayCount });
+                    localStorage.setItem('consistencyLog', JSON.stringify(log));
+                }
                 dayCount = 0;
                 startDate = null;
                 localStorage.removeItem('startDate');
@@ -93,6 +126,20 @@
         // Display initial values
         document.getElementById('startDate').querySelector('span').textContent = startDate;
         document.getElementById('dayCount').querySelector('span').textContent = dayCount;
+
+        // Function to render the log
+        function renderLog() {
+            const logList = document.getElementById('logList');
+            logList.innerHTML = '';
+            log.forEach(entry => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Start: ${entry.startDate}, End: ${entry.endDate}, Days: ${entry.days}`;
+                logList.appendChild(listItem);
+            });
+        }
+
+        // Render the log on page load
+        renderLog();
 
         // Function to mark a day as consistent
         function markConsistent() {
@@ -115,6 +162,10 @@
         // Function to reset the tracker
         function resetTracker() {
             if (confirm("Are you sure you want to reset the tracker?")) {
+                if (startDate && dayCount > 0) {
+                    log.push({ startDate, endDate: lastMarkedDate, days: dayCount });
+                    localStorage.setItem('consistencyLog', JSON.stringify(log));
+                }
                 dayCount = 0;
                 startDate = null;
                 lastMarkedDate = null;
@@ -124,6 +175,8 @@
 
                 document.getElementById('startDate').querySelector('span').textContent = "Not Set";
                 document.getElementById('dayCount').querySelector('span').textContent = 0;
+
+                renderLog();
             }
         }
     </script>
